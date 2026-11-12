@@ -3,7 +3,8 @@
 ## What The Product Is
 
 A personal web application for keeping a DBT (dialectical behavior therapy) diary card on an iPhone. It replaces the
-front side of the paper card «Дневниковая карточка»: the owner rates the day's urges, states, substances, actions and
+front side of the paper card «Дневниковая карточка» ([DiaryCardForm.pdf](DiaryCardForm.pdf): page 1 is the front
+side, page 2 the back side): the owner rates the day's urges, states, substances, actions and
 emotions, and before a therapy session downloads the week as a PDF that looks like the paper card.
 
 There is one user, the owner of the phone. There are no accounts, no server and no sync: the records stay on the
@@ -56,7 +57,8 @@ The card header of a week:
 ## PDF Export
 
 The PDF covers one chosen week: the card header and the daily table in the layout of the front side of the paper
-card, on a landscape A4 page, black and white like the original. It is generated on the phone. On the iPhone the
+card (page 1 of [DiaryCardForm.pdf](DiaryCardForm.pdf), without its bottom weekly block), on a landscape A4 page,
+black and white like the original. It is generated on the phone. On the iPhone the
 button opens the share sheet, from which the file is saved to Files or sent.
 
 ## Backup
