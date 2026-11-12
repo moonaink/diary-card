@@ -1,15 +1,13 @@
 # Code Architecture Rules
 
-Status: Draft
+Status: Active
 
 ## Purpose
 
 Code that is predictable for a human and an agent: the role of a type is clear from its name, each piece of state
 has one owner, and configuration, persisted state, calculation, input and presentation are not mixed without need.
 
-The repository holds only the Vite + React + TypeScript skeleton (`src/main.tsx`, `src/App.tsx`), so these rules are
-starting points, not patterns extracted from existing code. They are revised after the first features: each rule then
-gets a pointer to the file that exemplifies it, and rules the code does not need are removed.
+The rules were set before the first feature and confirmed by it; each rule points at the file that exemplifies it.
 
 ## Application Levels
 
@@ -31,11 +29,10 @@ unsaved edit, an operation contract or UI.
 | Form | Role |
 | --- | --- |
 | Plain domain noun (`<Thing>`) | A domain record: plain data that is stored, validated and passed around. No methods with side effects. |
-| `<Thing>Draft` | The unsaved editing copy of a record held by a screen. Becomes a record only through the save operation. |
 | `<Thing>Settings` | User-editable configuration persisted on the device. |
 | `<Operation>Request` | The input contract of an operation that validates its input. |
 | `<Operation>Result` | The output contract of an operation that can fail: a discriminated union with `ok: true` and `ok: false` variants, the failure variant carrying a reason. |
-| `<Thing>Store` | The owner of one kind of persisted record: the only module that reads and writes it in storage. |
+| `<Thing>Store` | The owner of persisted records: the only module that reads and writes them in storage. |
 | `<Name>Screen` | A React component that is one whole screen. |
 | PascalCase component | A reusable React UI piece. |
 | `use<Name>` | A React hook: wiring between UI and a store or the model. |
@@ -43,73 +40,71 @@ unsaved edit, an operation contract or UI.
 Generic names (`Manager`, `Handler`, `Data`, `Info`, `Processor`, `Utils`, `helpers`) are avoided when a precise role
 exists. Existing names are not renamed for style.
 
-Why: the card has several shapes of the same information (a stored day, a day being edited, a day prepared for the
-PDF). Without role names those shapes get confused, and a screen starts saving its draft as if it were the record.
+Why: the card has several shapes of the same information — a stored day, a day being edited, a week prepared for
+the PDF. The project names them `DayEntry`, the draft of `useDayDraft()` and `WeekCard`; `DiaryStore`,
+`DiarySettings`, `DayScreen` and `ParseResult` follow the table.
 
 ## File Granularity
 
 The small vocabulary of one operation (its union types, small records, failure-reason type) lives in the file of the
-type or function that owns it, not one file per type. A separate file is for a vocabulary shared by many operations
-(for example the rating scales of the card).
+type or function that owns it, not one file per type. A separate file is for a vocabulary shared by many operations.
 
-Why: one-type-per-file scatters an operation over many tiny files; an agent then reads five files to understand one
-save.
+Why: one-type-per-file scatters an operation over many tiny files. The project keeps `SubstanceEntry` and every edit
+of a day in `src/card/dayEntry.ts`; the column declarations shared by the screen, the PDF and validation live in
+`src/card/cardColumns.ts`.
 
 ## Folder Layout
 
-Code lives in `src/` by area: `src/<area>/<module>.ts`, React components as `src/<area>/<Component>.tsx`, a test next
-to its module as `src/<area>/<module>.test.ts`. The areas and their dependency order are in
-[SystemMap.md](SystemMap.md). A folder is created with its first file.
+Code lives in `src/` by layer area: `src/card/`, `src/storage/`, `src/pdf/`, `src/ui/` (see
+[SystemMap.md](SystemMap.md)). A module is `src/<area>/<module>.ts`, a React component `src/<area>/<Component>.tsx`,
+a test sits next to its module as `src/<area>/<module>.test.ts`. A folder is created with its first file.
 
 Why: the app is small; an area folder holds everything of one concern, so a task touches one or two folders.
 
 ## One Source Of Truth
 
-Each piece of canonical state has one owner. For persisted card data the owner is its store module; React state holds
-only drafts and view state (which day is open, which week is selected). A value derived from records (the fill
-frequency of a week, the rows of the PDF) is computed by a function from the records each time, not stored next to
-them.
+Each piece of canonical state has one owner. For persisted card data the owner is `DiaryStore`; React state holds
+only drafts and view state (which day is open, which tab). A value derived from records (the fill frequency, the rows
+of the PDF) is computed by a function each time, not stored next to them.
 
 Right direction:
 
 ```text
-user action → screen builds a request → model validates → store saves → screen re-reads the record → UI
+user action → edit function of the model → draft on screen → DiaryStore saves → later loads read the store
 ```
 
 Unwanted direction:
 
 ```text
-component keeps its own copy of a rule (e.g. "ratings are 0-5") and writes the record to storage directly,
+component keeps its own copy of a rule (e.g. "ratings are 0-5") and writes the record to IndexedDB directly,
 while another component keeps a second copy of the same record in its state
 ```
 
 Why: the data lives only on the phone. Two copies of a day that disagree mean one of them is silently lost on the
-next save, and there is no server copy to recover from.
+next save, and there is no server copy to recover from. The project derives the fill frequency in
+`resolveFillFrequency()` and never stores it; the scale ranges exist only in `src/card/cardColumns.ts`.
 
 ## Feature Anatomy
 
-A durable feature falls into these parts; not every feature has all of them:
+A durable feature falls into these parts; not every feature has all of them. Examples from the diary card:
 
-- configuration — constants and scales of the card (model area);
-- persisted state — records owned by a store;
-- execution logic — plain functions that validate, derive and transform (model area);
-- operation data — `*Request` and `*Result` types of the operations;
-- presentation — screens, components and hooks;
-- documentation — the system or feature document that states the contract.
-
-No feature exists yet; real examples are added here with the first feature.
+- configuration — the column declarations and scales, `src/card/cardColumns.ts`;
+- persisted state — days, week headers, settings owned by `DiaryStore`;
+- execution logic — `normalizeDayEntry()`, `buildWeekCard()`, `buildCardLayout()`;
+- operation data — `ParseResult` of the `tryParse*` functions, `DiaryContents` of backup and restore;
+- presentation — `DayScreen`, `WeekScreen`, `SettingsScreen`, `src/ui/styles.css`;
+- documentation — [CardModel.md](../Systems/CardModel.md) and the feature documents.
 
 ## Framework Boundaries
 
 React components and hooks are the boundary of the framework: rendering, local view state, reading input, calling
-the model and the store. Calculations and decisions (validation of a rating, the fill frequency of a week, the layout
-of the PDF table) live in plain TypeScript functions that can be tested without React, a browser or storage.
-
-The same holds for browser APIs: storage access, file download and the share sheet are wrapped in their own modules;
+the model and the store. Calculations and decisions live in plain TypeScript functions that can be tested without
+React, a browser or storage. Browser APIs (storage, file download, the share sheet) are wrapped in their own modules;
 the model does not import them.
 
-Why: plain functions are tested with Vitest in Node in milliseconds; logic inside a component needs a browser to be
-tested at all, so in practice it is not tested.
+Why: plain functions are tested with Vitest in Node in milliseconds. The PDF geometry is the plain function
+`buildCardLayout()`, tested without a PDF library, while `renderCardPdf()` only draws it; the share sheet and
+download are behind `deliverFile()`.
 
 ## Dependency Lookup
 
@@ -117,27 +112,29 @@ Preferred order, from the most explicit to the least explicit:
 
 1. function arguments and component props;
 2. a module import of a pure function or a constant;
-3. a React context that provides one app-wide instance (for example the store), read through a `use<Name>` hook.
+3. a React context that provides one app-wide instance, read through a `use<Name>` hook.
 
 New module-level mutable singletons and lookups through `window` globals are `Forbidden`.
 
-Why: an explicit dependency shows in the signature what a function touches; a hidden global makes a test depend on
-what another test left behind.
+Why: an explicit dependency shows in the signature what a function touches. The one app-wide instance, the store,
+reaches screens through `useDiaryStore()`; `renderCardPdf()` receives its fonts as an argument instead of loading
+them itself.
 
 ## Validation And Failure Policy
 
 Different kinds of failure are handled differently:
 
-- **Configuration or environment error** — the build config is broken, or the browser lacks a required API (storage
-  unavailable, private mode refusing storage). Loud and early: the app shows an error screen that names the problem;
-  it does not run on with a half-working store.
-- **Invalid input from outside** — a value typed in a form, a backup file being restored. Validated at the boundary
-  and returned as an explicit error with a reason; nothing is saved partially. A restored backup that fails
-  validation leaves the existing records untouched.
+- **Configuration or environment error** — the build config is broken, or the browser lacks a required API. Loud and
+  early: `StoreProvider` shows an error screen when the database cannot be opened, instead of running on without a
+  place to save.
+- **Invalid input from outside** — a backup file being restored. Validated at the boundary and returned as an
+  explicit error with a reason; nothing is saved partially: `tryParseBackupFile()` checks the whole file before
+  `DiaryStore.replaceAll` writes anything.
 - **Runtime invalid state** — a day has no record yet, a stored record was written by an older version of the app,
-  storage quota is exhausted. A safe explicit outcome: an empty day, a migrated record, a message to the user. Never
-  a crash and never silent data loss.
-- **Programmer contract error** — a function is called with arguments its contract forbids. May throw.
+  storage quota is exhausted. A safe explicit outcome: `useDayDraft()` starts an empty day for a missing record; a
+  failed save shows a notice on the screen. Never a crash and never silent data loss.
+- **Programmer contract error** — a function is called with arguments its contract forbids. May throw:
+  `applyRating()` throws `RangeError` for a value outside 0–5.
 
 ## UI And Presentation
 
@@ -157,7 +154,7 @@ User-visible text is in Russian; code identifiers are in English.
 | `can*` / `is*` / `has*` | A check without mutation. |
 | `try*` | An attempt that returns a `*Result` instead of throwing. |
 | `resolve*` / `compute*` | Compute a final or derived value from inputs; no side effects. |
-| `build*` | Assemble a new structure (a request, a PDF document) from inputs. |
+| `build*` | Assemble a new structure (a request, a PDF layout, a file) from inputs. |
 | `load*` / `save*` | Read from or write to storage. |
 | `apply*` | Apply a change to state. |
 | `remove*` | Remove one part (one substance entry). |

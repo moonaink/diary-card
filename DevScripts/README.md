@@ -52,6 +52,7 @@ Finds code names in backticks and checks that they exist:
 
 - paths (`src/App.tsx`, `Docs/Core/`) — resolved from the repository root or from the document's folder;
 - bare file names (`vite.config.ts`) — some file in the repository has that name;
+- scoped npm packages (`@pdf-lib/fontkit`) — installed in `node_modules`;
 - `Type.member` — the type is declared in `.ts`/`.tsx`/`.js`/`.mjs` code outside `DevScripts/`, and the member is
   declared inside the braces of that declaration;
 - `functionName()` — declared as a function, a const, or a method;

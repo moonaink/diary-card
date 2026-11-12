@@ -1,13 +1,11 @@
 # Names that documents mention on purpose although they do not exist in the repository.
 # One name per line, exactly as written between the backticks. Remove a line once the name exists.
 
-# Documentation layers and routers, created together with their first document.
-Docs/Systems/
-Docs/Features/
-Docs/Tests/
+# Built into JavaScript or the browser.
+RangeError
+
+# Created together with its first content.
 Docs/Tests/Gaps.md
-Docs/Core/TestSuiteMap.md
-TestSuiteMap.md
 
 # Plans folder, created with the first plan.
 Drafts/

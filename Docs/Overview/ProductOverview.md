@@ -4,21 +4,21 @@
 
 A personal web application for keeping a DBT (dialectical behavior therapy) diary card on an iPhone. It replaces the
 front side of the paper card «Дневниковая карточка» ([DiaryCardForm.pdf](DiaryCardForm.pdf): page 1 is the front
-side, page 2 the back side): the owner rates the day's urges, states, substances, actions and
-emotions, and before a therapy session downloads the week as a PDF that looks like the paper card.
+side, page 2 the back side): the owner rates the day's urges, states, substances, actions and emotions, and before a
+therapy session downloads the week as a PDF that looks like the paper card.
 
 There is one user, the owner of the phone. There are no accounts, no server and no sync: the records stay on the
 phone (see [LocalOnlyPwa.md](../Decisions/LocalOnlyPwa.md)). The interface is in Russian.
 
 ## Main User Loop
 
-1. Once: open the site in Safari and add it to the home screen; enter the name in the settings.
-2. Each day, or when catching up on missed days: open the app from the home-screen icon, pick the day, fill in the
-   card, save.
-3. Before a session: pick the week, enter the start date of the card, mark whether the card is being filled in
-   during the session, press «Скачать PDF», and save or send the file from the iPhone share sheet.
-4. From time to time: save a backup file of all records to Files / iCloud Drive; restore from it on a new phone or
-   after the app was removed.
+1. Once: open the site in Safari and add it to the home screen; enter the name in «Настройки».
+2. Each day, or when catching up on missed days: open the app from the home-screen icon. It opens on today's card;
+   the arrows move to earlier days. Every tap is saved at once.
+3. Before a session: on «Неделя», pick the week, enter the start date of the card, mark whether the card is being
+   filled in during the session, press «Скачать PDF», and save or send the file from the iPhone share sheet.
+4. From time to time: on «Настройки», save a backup file of all records to Files / iCloud Drive; restore from it on a
+   new phone or after the app was removed.
 
 ## The Diary Card
 
@@ -54,12 +54,19 @@ The card header of a week:
   have an entry: all seven — «Ежедневно»; four to six — «4-6 р.»; two or three — «2-3 р.»; one — «Один».
 - «Дата начала заполнения» — entered by hand per week; the app does not fill it in.
 
+## Editing Rules
+
+- The app opens on today and returns to today when it is resumed on a later date.
+- Days after today cannot be filled in.
+- A day of a past week changes only after a confirmation, asked once per opened day.
+- Changes are saved automatically; there is no save button.
+
 ## PDF Export
 
-The PDF covers one chosen week: the card header and the daily table in the layout of the front side of the paper
-card (page 1 of [DiaryCardForm.pdf](DiaryCardForm.pdf), without its bottom weekly block), on a landscape A4 page,
-black and white like the original. It is generated on the phone. On the iPhone the
-button opens the share sheet, from which the file is saved to Files or sent.
+The PDF covers one chosen week: the card header, the daily table and, under it, the «Применение навыков» 0–7 legend,
+in the layout of the front side of the paper card (page 1 of [DiaryCardForm.pdf](DiaryCardForm.pdf), without its
+bottom weekly block), on a landscape A4 page, black and white like the original. It is generated on the phone. On the
+iPhone the button opens the share sheet, from which the file is saved to Files or sent.
 
 ## Backup
 
@@ -74,21 +81,14 @@ the repository, they are used as decorations, for personal use. The style applie
 
 ## Implementation Status
 
-Exists:
-
-- the project skeleton: Vite + React + TypeScript with a placeholder page (`src/App.tsx`);
-- automatic build and publication to GitHub Pages on every push to `main` (`.github/workflows/deploy.yml`).
-
-Not implemented: everything described above — daily entry, storage on the phone, the week header, PDF export,
-backup, installation to the home screen with offline work, and the visual style.
+Everything described above exists: daily entry with autosave and the past-week confirmation, storage on the phone,
+the week header, the PDF export with the legend, backup and restore, installation to the home screen with offline
+work, and the pink style with bows, hearts and polka dots. The behavior is described in
+[Overview.md](../Features/DiaryCard/Overview.md).
 
 ## Design Not Yet Fixed
 
-An agent raises these with the owner instead of deciding:
-
-- the layout of the daily entry screen and the navigation between days and weeks;
-- whether the PDF prints the «Применение навыков» 0–7 legend under the table;
-- whether a day of a past week can still be edited, and whether that needs a confirmation.
+No open design questions at the moment.
 
 ## Explicitly Out Of Scope
 

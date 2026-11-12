@@ -5,10 +5,12 @@
 A personal web app for keeping a DBT diary card on an iPhone: daily ratings of urges, states, substances, actions and
 emotions, a weekly PDF in the layout of the paper card, records stored only on the phone, a pastel-pink kawaii style.
 
-Stack: React 19, TypeScript 7, Vite 8, Vitest 5, oxlint, Prettier 3, Node.js 26 LTS. Hosted on GitHub Pages as a
-static installable web app; there is no backend.
+Stack: React 19, TypeScript 7, Vite 8 with vite-plugin-pwa, IndexedDB through idb, pdf-lib with fontkit, Vitest 5
+with fake-indexeddb, oxlint, Prettier 3, Node.js 26 LTS. Hosted on GitHub Pages as a static installable web app;
+there is no backend.
 
-What works: the project skeleton with a placeholder page, and automatic publication to GitHub Pages on push to `main`.
+What works: daily entry with autosave, the week header and the PDF of a week, backup and restore, installation to
+the iPhone home screen with offline work, and automatic publication to GitHub Pages on push to `main`.
 
 Before proposing anything, read `## Implementation Status` in
 [ProductOverview.md](Docs/Overview/ProductOverview.md); do not propose what its `## Explicitly Out Of Scope` lists,
@@ -25,8 +27,8 @@ and raise what `## Design Not Yet Fixed` lists with the user instead of deciding
 
 1. Before writing or editing any document — [DocumentationRules.md](Docs/Core/DocumentationRules.md).
 2. Before changing code — [CodeArchitectureRules.md](Docs/Core/CodeArchitectureRules.md).
-3. Before touching tests — [TestingRules.md](Docs/Core/TestingRules.md), and the test maps (`Docs/Core/TestSuiteMap.md`
-   with `Docs/Tests/`) once the first suite is documented.
+3. Before touching tests — [TestingRules.md](Docs/Core/TestingRules.md), [TestSuiteMap.md](Docs/Core/TestSuiteMap.md)
+   and the test area document of the area in `Docs/Tests/`.
 4. In an unfamiliar area — [ProductOverview.md](Docs/Overview/ProductOverview.md),
    [Glossary.md](Docs/Core/Glossary.md), [SystemMap.md](Docs/Core/SystemMap.md).
 5. Then the canonical document of the area from [DocumentMap.md](Docs/Core/DocumentMap.md).
@@ -35,15 +37,16 @@ and raise what `## Design Not Yet Fixed` lists with the user instead of deciding
 
 The code is the only source for these for now. Write the document when the area stabilizes.
 
-- App entry — `src/main.tsx`, `src/App.tsx`.
-- Build and tooling configuration — `vite.config.ts`, `tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json`,
-  `.oxlintrc.json`, `.prettierrc.json`.
-- Publication — `.github/workflows/deploy.yml`; the reason behind it is in
-  [LocalOnlyPwa.md](Docs/Decisions/LocalOnlyPwa.md).
+- Visual style — `src/ui/styles.css` (colors as CSS variables at its top), `src/ui/decorations.tsx` (bow, heart and
+  tab icons). The intent is in [ProductOverview.md](Docs/Overview/ProductOverview.md) `## Visual Style`.
+- Build and tooling configuration — `tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json`, `tsconfig.test.json`,
+  `.oxlintrc.json`, `.prettierrc.json`. The PWA part of `vite.config.ts` is in
+  [OfflineApp.md](Docs/Systems/OfflineApp.md).
 
 ## Repository Landmarks
 
 - `src/` — application code; layers and folders per [SystemMap.md](Docs/Core/SystemMap.md).
+- `public/` — the home-screen icons and the favicon, copied into the build as they are.
 - `Docs/` — documentation for agents, in English.
 - `DevScripts/` — checks for documents and plans (Node, no dependencies); see `DevScripts/README.md`.
 - `.claude/skills/` — the `/create-plan` and `/explain` skills.
@@ -72,6 +75,7 @@ Run from the repository root:
 | `npm run lint` | oxlint | agent |
 | `npm run format` | Prettier, rewrites files; `npm run format:check` only checks | agent |
 | `npm test` | Vitest, all tests once | agent |
+| `npx vitest run <file or folder>` | Vitest, only the given tests | agent |
 | `npm run build` | Type check and production build into `dist/` | agent |
 | `npm run dev` | Dev server at `http://localhost:5173/diary-card/` | agent starts it, user looks |
 | `npm run dev -- --host` | The same, reachable from the iPhone on the same Wi-Fi at `http://<computer IP>:5173/diary-card/` | agent starts it, user looks |

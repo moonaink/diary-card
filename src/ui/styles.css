@@ -1,0 +1,513 @@
+:root {
+  --bg: #fff0f5;
+  --dot: #ffd6e3;
+  --card: #ffffff;
+  --line: #ffc4d6;
+  --shadow: #ffd9e5;
+  --accent: #f26b98;
+  --accent-strong: #e0457a;
+  --accent-soft: #ffe3ec;
+  --bow: #ef3e5c;
+  --bow-dark: #c8284a;
+  --text: #5b3848;
+  --muted: #a27a8a;
+  --danger: #d2405a;
+  color-scheme: light;
+  font-family:
+    'Nunito',
+    system-ui,
+    -apple-system,
+    sans-serif;
+  color: var(--text);
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(var(--dot) 17%, transparent 19%) 0 0 / 26px 26px,
+    radial-gradient(var(--dot) 17%, transparent 19%) 13px 13px / 26px 26px,
+    var(--bg);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+h1,
+h2 {
+  margin: 0;
+  font-weight: 800;
+}
+
+p {
+  line-height: 1.45;
+}
+
+.app {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: calc(8px + env(safe-area-inset-top)) 14px calc(96px + env(safe-area-inset-bottom));
+}
+
+/* Top bar with arrows */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 -14px 6px;
+  padding: calc(8px + env(safe-area-inset-top)) 14px 10px;
+  background: rgba(255, 240, 245, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 2px dashed var(--line);
+}
+
+.topbar-title {
+  flex: 1;
+  text-align: center;
+  min-width: 0;
+}
+
+.topbar-title h1 {
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.nav-button {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: var(--card);
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 800;
+  color: var(--accent-strong);
+  box-shadow: 0 3px 0 var(--shadow);
+}
+
+.today-badge {
+  display: inline-block;
+  margin-top: 2px;
+  padding: 1px 10px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.link-button {
+  margin-top: 2px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent-strong);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Sections */
+
+.card-section {
+  margin: 14px 0;
+  padding: 14px 14px 6px;
+  border-radius: 24px;
+  border: 2px solid var(--line);
+  background: var(--card);
+  box-shadow: 0 5px 0 var(--shadow);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.section-title h2 {
+  font-size: 18px;
+}
+
+.section-title p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.field {
+  margin-bottom: 14px;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.value {
+  margin: 0;
+  font-size: 16px;
+}
+
+.hint {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.day-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.day-status.filled {
+  color: var(--accent-strong);
+}
+
+/* Scale and choice buttons */
+
+.scale {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+}
+
+.scale button {
+  width: 100%;
+  max-width: 44px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: var(--card);
+  font-size: 17px;
+  font-weight: 800;
+  transition:
+    transform 0.12s,
+    background-color 0.12s;
+}
+
+.scale button[aria-pressed='true'],
+.choice button[aria-pressed='true'] {
+  background: var(--accent);
+  border-color: var(--accent-strong);
+  color: #fff;
+  transform: scale(1.08);
+  box-shadow: 0 3px 0 var(--accent-strong);
+}
+
+.choice {
+  display: flex;
+  gap: 10px;
+}
+
+.choice button {
+  flex: 1;
+  height: 44px;
+  border-radius: 999px;
+  border: 2px solid var(--line);
+  background: var(--card);
+  font-weight: 800;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.stepper button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: var(--card);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--accent-strong);
+}
+
+.stepper output {
+  min-width: 36px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+/* Substances */
+
+.substance-category {
+  margin-bottom: 14px;
+}
+
+.substance-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.substance-row .input {
+  flex: 1;
+  min-width: 0;
+}
+
+.substance-row .input.quantity {
+  flex: 0 0 108px;
+}
+
+.icon-button {
+  flex: none;
+  width: 44px;
+  border-radius: 14px;
+  border: 2px solid var(--line);
+  background: var(--accent-soft);
+  font-size: 22px;
+  color: var(--accent-strong);
+}
+
+.add-button {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 2px dashed var(--line);
+  background: transparent;
+  color: var(--accent-strong);
+  font-weight: 800;
+}
+
+/* Inputs and buttons */
+
+.input {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 14px;
+  border: 2px solid var(--line);
+  background: #fffafc;
+  color: var(--text);
+  /* 16px or more keeps iOS Safari from zooming into the field. */
+  font: inherit;
+  font-size: 16px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.button {
+  display: block;
+  min-height: 50px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: 2px solid var(--accent-strong);
+  background: var(--accent);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 800;
+  box-shadow: 0 4px 0 var(--accent-strong);
+}
+
+.button.secondary {
+  border-color: var(--line);
+  background: var(--card);
+  color: var(--accent-strong);
+  box-shadow: 0 4px 0 var(--shadow);
+}
+
+.button.wide {
+  width: 100%;
+  margin: 14px 0;
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+/* Week */
+
+.week-days {
+  margin: 0;
+  padding: 0 0 8px;
+  list-style: none;
+}
+
+.week-day {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+  margin-bottom: 6px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  border: 2px solid var(--line);
+  background: #fffafc;
+  text-align: left;
+}
+
+.week-day.filled {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.week-day-name {
+  width: 36px;
+  font-weight: 800;
+}
+
+.week-day-date {
+  flex: 1;
+}
+
+.week-day-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent-strong);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* Notices, dialogs, splash */
+
+.notice {
+  margin: 10px 0;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: var(--accent-soft);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.notice.error {
+  background: #ffe0e4;
+  color: var(--danger);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.loading,
+.splash {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.splash {
+  min-height: 100vh;
+}
+
+.splash h1 {
+  margin-top: 16px;
+  font-size: 22px;
+}
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(91, 56, 72, 0.35);
+}
+
+.dialog {
+  width: 100%;
+  max-width: 380px;
+  padding: 22px 20px 18px;
+  border-radius: 28px;
+  border: 3px solid var(--line);
+  background: var(--card);
+  text-align: center;
+  box-shadow: 0 8px 0 var(--shadow);
+}
+
+.dialog h2 {
+  margin-top: 6px;
+  font-size: 20px;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.dialog-actions .button {
+  flex: 1;
+  padding: 0 10px;
+}
+
+/* Tab bar */
+
+.tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
+  border-top: 2px solid var(--line);
+  border-radius: 24px 24px 0 0;
+  background: var(--card);
+  box-shadow: 0 -4px 0 var(--shadow);
+}
+
+.tabbar button {
+  flex: 1;
+  max-width: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 0;
+  border: none;
+  border-radius: 16px;
+  background: none;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.tabbar button[aria-current='page'] {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}

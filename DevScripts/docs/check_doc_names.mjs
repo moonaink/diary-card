@@ -102,6 +102,12 @@ function isMemberDeclared(body, member) {
 }
 
 function checkName(value, docPath, ruleDocument) {
+  // A scoped npm package such as `@pdf-lib/fontkit` is checked against node_modules, not the repository tree.
+  if (/^@[a-z0-9-]+\/[a-z0-9.-]+$/.test(value)) {
+    return fs.existsSync(abs(`node_modules/${value}/package.json`))
+      ? null
+      : 'npm package is not installed'
+  }
   if (looksLikePath(value)) {
     const clean = value.replace(/^\.\//, '').replace(/[#:].*$/, '')
     if (clean.includes('/')) {

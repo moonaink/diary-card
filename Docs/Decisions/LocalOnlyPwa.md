@@ -24,10 +24,11 @@ The app is a static web application installed to the iPhone home screen (a progr
   address has a separate storage. The owner fills the card only from the icon, and the app must offer backup and
   restore (see [ProductOverview.md](../Overview/ProductOverview.md) `## Backup`).
 - Safari may clear the storage of websites that are not in use; a home-screen web app counts its own days of use, so
-  its storage is not expected to be cleared while the app is used. The storage layer must request persistent
-  storage (`navigator.storage.persist()`); the backup remains the protection against loss.
+  its storage is not expected to be cleared while the app is used. The app asks for persistent storage at start
+  (`requestPersistentStorage()`); the backup remains the protection against loss.
 - Every library has to work in the browser and offline. Generating a PDF with Russian text on the phone needs a font
-  with Cyrillic glyphs bundled with the app.
+  with Cyrillic glyphs bundled with the app ([CardPdf.md](../Systems/CardPdf.md)), and every file the app uses must
+  be cached by the service worker ([OfflineApp.md](../Systems/OfflineApp.md)).
 - A feature that needs a server (push reminders, sync between devices, sharing with the therapist through a link)
   is outside this decision and needs a new architecture decision document.
 - The repository is public: code, documents and any images added to it are visible to anyone; the records never

@@ -1,14 +1,15 @@
 # Testing Rules
 
-Status: Draft
+Status: Active
 
 ## Purpose
 
 Tests that read as a specification of behavior and protect documented contracts, without becoming a second
 documentation that contradicts `Docs/`.
 
-The test runner is Vitest (`npm test` runs `vitest run`) in the Node environment, as set in `vite.config.ts`. No test
-exists yet; the examples below are starting points and are replaced with real ones when the first suites appear.
+The test runner is Vitest (`npm test` runs `vitest run`) in the Node environment, as set in `vite.config.ts`. Test
+files are type-checked by `tsconfig.test.json`, which adds Node types for tests only; application code does not see
+them. The suites and the contracts they protect are routed by [TestSuiteMap.md](TestSuiteMap.md).
 
 ## Scope Levels
 
@@ -29,17 +30,22 @@ exists yet; the examples below are starting points and are replaced with real on
 
 ## Test Categories
 
-- **Formula tests** — a pure calculation: the fill frequency of a week from its filled days, validation of a rating,
-  the rows of the PDF table built from a week of records. The cheapest kind; preferred whenever the logic can be
-  isolated.
-- **State-model tests** — a stateful plain object or a sequence of pure transitions through its public API: editing a
-  draft, adding and removing substance entries, migrating a stored record of an older shape.
-- **Integration-lite tests** — two or three modules together without the full application: building the PDF document
-  definition from records, validating and converting a backup file into records.
+- **Formula tests** — a pure calculation: the fill frequency of a week (`src/card/weekCard.test.ts`), date
+  arithmetic (`src/card/dates.test.ts`), the placement of values in the PDF layout (`src/pdf/cardLayout.test.ts`).
+  The cheapest kind; preferred whenever the logic can be isolated.
+- **State-model tests** — a sequence of pure transitions through a public API: editing a day entry, adding and
+  removing substance entries (`src/card/dayEntry.test.ts`).
+- **Integration-lite tests** — two or three modules together without the full application: reading a backup file
+  into records (`src/storage/backupFile.test.ts`), the store over an in-memory IndexedDB
+  (`src/storage/diaryStore.test.ts`), rendering a PDF with the real fonts (`src/pdf/renderCardPdf.test.ts`).
 
-What needs a real browser (IndexedDB, the share sheet, file download, the look of the PDF, layout on the iPhone) is
-outside these rules and goes to the `## Manual test checklist` of the feature until the project adopts browser tests
-and extends this document.
+Storage tests use `fake-indexeddb` (`import 'fake-indexeddb/auto'` at the top of the test file), an in-memory
+IndexedDB for Node, and delete the database after each test. A test that needs a file of the app (a font) reads it
+from `node_modules` by a path relative to the test file.
+
+What needs a real browser (the share sheet, file download, the service worker, the look of the PDF, layout on the
+iPhone, storage eviction in Safari) is outside these rules and goes to the `## Manual test checklist` of the feature
+until the project adopts browser tests and extends this document.
 
 ## Folder Layout And Naming
 
