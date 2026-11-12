@@ -1,0 +1,5 @@
+dist
+node_modules
+package-lock.json
+# Markdown is written by hand under the documentation rules, not reformatted.
+*.md

@@ -1,0 +1,8 @@
+# LF everywhere: the documentation checks report mixed line endings, and core.autocrlf would otherwise
+# turn checked-out files into CRLF on Windows.
+* text=auto eol=lf
+*.pdf binary
+*.png binary
+*.jpg binary
+*.ttf binary
+*.woff2 binary
