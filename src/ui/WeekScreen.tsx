@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
-  WEEKDAY_SHORT_LABELS,
   addDays,
   isIsoDate,
   weekDates,
   weekStartOf,
+  weekdayShortLabel,
   type IsoDate,
 } from '../card/dates.ts'
 import {
@@ -161,7 +161,7 @@ export function WeekScreen({ weekStart, today, onOpenDay, onChangeWeek }: WeekSc
                       disabled={future}
                       onClick={() => onOpenDay(date)}
                     >
-                      <span className="week-day-name">{WEEKDAY_SHORT_LABELS[i]}</span>
+                      <span className="week-day-name">{weekdayShortLabel(date)}</span>
                       <span className="week-day-date">{formatShortDate(date)}</span>
                       <span className="week-day-status">
                         {future ? (

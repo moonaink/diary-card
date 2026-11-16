@@ -14,9 +14,10 @@ Files:
 
 - `src/pdf/cardLayout.test.ts`
 
-Contract: every column title of the card is printed, a value lands in the row of its weekday and the column of its
-field, the derived fill frequency and the start date are written into the header, the whole legend is printed, a
-quantity stays on the line of its name, a long name is cut, and nothing leaves the page.
+Contract: every column title of the card is printed, the day rows run Wednesday to Tuesday, a value lands in the row
+of its weekday and the column of its field, the derived fill frequency and the start date are written into the
+header, the whole legend is printed, a quantity stays on the line of its name, a long name is cut, and nothing leaves
+the page.
 
 Canonical docs:
 

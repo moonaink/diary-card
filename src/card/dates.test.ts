@@ -1,17 +1,36 @@
 import { describe, expect, it } from 'vitest'
-import { addDays, isInPastWeek, isIsoDate, weekDates, weekStartOf, weekdayIndex } from './dates.ts'
+import {
+  addDays,
+  isInPastWeek,
+  isIsoDate,
+  isWeekStart,
+  weekDates,
+  weekStartOf,
+  weekdayShortLabel,
+} from './dates.ts'
 
 describe('weekStartOf', () => {
-  it('returns the Monday before when the date is a Sunday', () => {
-    expect(weekStartOf('2026-11-15')).toBe('2026-11-09')
+  it('returns the Wednesday before when the date is a Tuesday', () => {
+    expect(weekStartOf('2026-11-17')).toBe('2026-11-11')
   })
 
-  it('returns the same date when the date is a Monday', () => {
-    expect(weekStartOf('2026-11-09')).toBe('2026-11-09')
+  it('returns the same date when the date is a Wednesday', () => {
+    expect(weekStartOf('2026-11-11')).toBe('2026-11-11')
+  })
+
+  it('returns the Wednesday before when the date is a Monday', () => {
+    expect(weekStartOf('2026-11-16')).toBe('2026-11-11')
   })
 
   it('crosses the month boundary when the week starts in the previous month', () => {
-    expect(weekStartOf('2026-12-02')).toBe('2026-11-30')
+    expect(weekStartOf('2026-12-01')).toBe('2026-11-25')
+  })
+})
+
+describe('isWeekStart', () => {
+  it('is true for a Wednesday and false for a Monday', () => {
+    expect(isWeekStart('2026-11-11')).toBe(true)
+    expect(isWeekStart('2026-11-09')).toBe(false)
   })
 })
 
@@ -27,23 +46,24 @@ describe('addDays', () => {
 })
 
 describe('weekDates', () => {
-  it('lists Monday to Sunday', () => {
-    expect(weekDates('2026-11-09')).toEqual([
-      '2026-11-09',
-      '2026-11-10',
+  it('lists Wednesday to Tuesday', () => {
+    expect(weekDates('2026-11-11')).toEqual([
       '2026-11-11',
       '2026-11-12',
       '2026-11-13',
       '2026-11-14',
       '2026-11-15',
+      '2026-11-16',
+      '2026-11-17',
     ])
   })
 })
 
-describe('weekdayIndex', () => {
-  it('returns 0 for Monday and 6 for Sunday', () => {
-    expect(weekdayIndex('2026-11-09')).toBe(0)
-    expect(weekdayIndex('2026-11-15')).toBe(6)
+describe('weekdayShortLabel', () => {
+  it('returns the label of the weekday of the date', () => {
+    expect(weekdayShortLabel('2026-11-11')).toBe('Ср.')
+    expect(weekdayShortLabel('2026-11-15')).toBe('Вс.')
+    expect(weekdayShortLabel('2026-11-16')).toBe('Пн.')
   })
 })
 
@@ -63,10 +83,10 @@ describe('isIsoDate', () => {
 
 describe('isInPastWeek', () => {
   it('is false for an earlier day of the current week', () => {
-    expect(isInPastWeek('2026-11-09', '2026-11-12')).toBe(false)
+    expect(isInPastWeek('2026-11-11', '2026-11-17')).toBe(false)
   })
 
-  it('is true for the Sunday right before the current week', () => {
-    expect(isInPastWeek('2026-11-08', '2026-11-09')).toBe(true)
+  it('is true for the Tuesday right before the current week', () => {
+    expect(isInPastWeek('2026-11-17', '2026-11-18')).toBe(true)
   })
 })

@@ -3,7 +3,14 @@ export type IsoDate = string
 
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/
 
-export const WEEKDAY_SHORT_LABELS = ['Пн.', 'Вт.', 'Ср.', 'Чт.', 'Пт.', 'Сб.', 'Вс.'] as const
+/** Short weekday labels of the paper card, indexed by `Date.getDay()`: 0 is Sunday. */
+const WEEKDAY_SHORT_LABELS = ['Вс.', 'Пн.', 'Вт.', 'Ср.', 'Чт.', 'Пт.', 'Сб.'] as const
+
+/**
+ * The weekday a card week starts on, as `Date.getDay()` counts: Wednesday. The therapy session is on
+ * Wednesday, so one card covers exactly the days since the previous session, Wednesday to Tuesday.
+ */
+const CARD_WEEK_START_DAY = 3
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
@@ -31,19 +38,24 @@ export function addDays(iso: IsoDate, days: number): IsoDate {
   return toIsoDate(date)
 }
 
-/** Monday of the week that contains the date: the card's week runs Monday to Sunday. */
+/** First day of the card week that contains the date: the card's week runs Wednesday to Tuesday. */
 export function weekStartOf(iso: IsoDate): IsoDate {
-  const mondayBased = (parseIsoDate(iso).getDay() + 6) % 7
-  return addDays(iso, -mondayBased)
+  const daysSinceStart = (parseIsoDate(iso).getDay() - CARD_WEEK_START_DAY + 7) % 7
+  return addDays(iso, -daysSinceStart)
+}
+
+/** True when the date is the first day of a card week (a Wednesday). */
+export function isWeekStart(iso: IsoDate): boolean {
+  return weekStartOf(iso) === iso
 }
 
 export function weekDates(weekStart: IsoDate): IsoDate[] {
   return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
 }
 
-/** Index of the date inside its Monday-based week: 0 for Monday, 6 for Sunday. */
-export function weekdayIndex(iso: IsoDate): number {
-  return (parseIsoDate(iso).getDay() + 6) % 7
+/** «Ср.» for a Wednesday: the weekday label of the date as the paper card prints it. */
+export function weekdayShortLabel(iso: IsoDate): string {
+  return WEEKDAY_SHORT_LABELS[parseIsoDate(iso).getDay()]
 }
 
 /** True when the date lies in a week that ended before the week of `today`. */

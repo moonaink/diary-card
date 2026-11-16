@@ -10,7 +10,9 @@ import {
 
 export const BACKUP_FORMAT = 'dbt-diary-card-backup'
 /** Raised when the file shape changes. A file of a newer version than the app knows is refused. */
-export const BACKUP_VERSION = 1
+export const BACKUP_VERSION = 2
+/** The last version whose week headers belong to Monday-to-Sunday weeks. */
+const LAST_MONDAY_WEEKS_VERSION = 1
 
 /** Everything the app stores: what a backup file carries and what a restore replaces. */
 export interface DiaryContents {
@@ -74,6 +76,11 @@ export function tryParseBackupFile(text: string): ParseResult<DiaryContents> {
   }
 
   if (!Array.isArray(data.weeks)) return rejected('в файле нет списка недель')
+  // Headers of an older file belong to Monday-to-Sunday weeks, which the card no longer has: the file is
+  // restored without them rather than refused, because its days and name are still valid.
+  if (data.version <= LAST_MONDAY_WEEKS_VERSION) {
+    return parsed({ settings: settings.value, days, weeks: [] })
+  }
   const weeks: WeekHeader[] = []
   const seenWeeks = new Set<string>()
   for (const raw of data.weeks) {

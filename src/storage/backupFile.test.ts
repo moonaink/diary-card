@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { applyRating, emptyDayEntry } from '../card/dayEntry.ts'
 import {
   BACKUP_FORMAT,
+  BACKUP_VERSION,
   buildBackupFile,
   tryParseBackupFile,
   type DiaryContents,
@@ -17,13 +18,13 @@ const contents: DiaryContents = {
       selfHarm: false,
     },
   ],
-  weeks: [{ weekStart: '2026-11-09', duringSession: false, startDate: '2026-11-09' }],
+  weeks: [{ weekStart: '2026-11-11', duringSession: false, startDate: '2026-11-11' }],
 }
 
 const fileWith = (changes: Record<string, unknown>) =>
   JSON.stringify({
     format: BACKUP_FORMAT,
-    version: 1,
+    version: BACKUP_VERSION,
     settings: { name: '' },
     days: [],
     weeks: [],
@@ -45,8 +46,28 @@ describe('tryParseBackupFile', () => {
     expect(tryParseBackupFile(JSON.stringify({ format: 'other', version: 1 })).ok).toBe(false)
   })
 
+  it('restores days and name of a version 1 file without its Monday week headers', () => {
+    const day = { date: '2026-11-10', ratings: { anger: 1 }, substances: {} }
+    const mondayWeek = { weekStart: '2026-11-09', duringSession: true, startDate: '2026-11-09' }
+
+    const result = tryParseBackupFile(
+      fileWith({ version: 1, settings: { name: 'Анна' }, days: [day], weeks: [mondayWeek] }),
+    )
+
+    expect(result).toEqual({
+      ok: true,
+      value: { settings: { name: 'Анна' }, days: [day], weeks: [] },
+    })
+  })
+
+  it('rejects a current-version file with a week header that does not start on a Wednesday', () => {
+    const weeks = [{ weekStart: '2026-11-09', duringSession: true }]
+
+    expect(tryParseBackupFile(fileWith({ weeks })).ok).toBe(false)
+  })
+
   it('rejects a file written by a newer version of the app', () => {
-    const result = tryParseBackupFile(fileWith({ version: 2 }))
+    const result = tryParseBackupFile(fileWith({ version: BACKUP_VERSION + 1 }))
 
     expect(result).toEqual({
       ok: false,

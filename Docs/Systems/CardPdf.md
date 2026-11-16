@@ -51,6 +51,7 @@ The PDF of one week in the layout of the front side of the paper card: the heade
 - Text shrinks to fit its cell, down to 4 pt. In the substance cells the quantity and the name of one category share
   one font size per day and one entry per line, so a quantity stays on the line of its name; a single long name
   shrinks only to 5.5 pt and is then cut with «…».
+- The day rows run Wednesday to Tuesday, each labelled with its own weekday (`weekdayShortLabel()`) and date.
 - A blank value prints an empty cell. A chosen header option («Да»/«Нет», the fill frequency) is an X written on its
   blank, as a person would mark the paper form.
 - The paper wording is kept as printed on the original, including «Диалектика Поведенческая Терапия».

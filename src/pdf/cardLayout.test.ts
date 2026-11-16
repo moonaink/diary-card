@@ -18,7 +18,7 @@ const texts = (ops: ReturnType<typeof buildCardLayout>['ops']) =>
 
 const layoutOf = (days: DayEntry[], header = {}, name = '') =>
   buildCardLayout(
-    buildWeekCard('2026-11-09', days, { weekStart: '2026-11-09', ...header }, { name }),
+    buildWeekCard('2026-11-11', days, { weekStart: '2026-11-11', ...header }, { name }),
     measure,
   )
 
@@ -34,22 +34,34 @@ describe('buildCardLayout', () => {
     }
   })
 
-  it('places a rating in the row of its weekday and the column of its field', () => {
-    const wednesday = applyRating(emptyDayEntry('2026-11-11'), 'urgeSuicide', 3)
+  it('prints the day rows from Wednesday to Tuesday', () => {
+    const labels = ['Ср.', 'Чт.', 'Пт.', 'Сб.', 'Вс.', 'Пн.', 'Вт.']
 
-    const ops = texts(layoutOf([wednesday]).ops)
+    const ops = texts(layoutOf([]).ops)
+
+    const rowsTopToBottom = ops
+      .filter((op) => labels.includes(op.text))
+      .sort((a, b) => a.y - b.y)
+      .map((op) => op.text)
+    expect(rowsTopToBottom).toEqual(labels)
+  })
+
+  it('places a rating in the row of its weekday and the column of its field', () => {
+    const monday = applyRating(emptyDayEntry('2026-11-16'), 'urgeSuicide', 3)
+
+    const ops = texts(layoutOf([monday]).ops)
 
     const value = ops.find((op) => op.text === '3' && op.size === 10)!
-    const wednesdayLabel = ops.find((op) => op.text === 'Ср.')!
-    const thursdayLabel = ops.find((op) => op.text === 'Чт.')!
+    const mondayLabel = ops.find((op) => op.text === 'Пн.')!
+    const tuesdayLabel = ops.find((op) => op.text === 'Вт.')!
     const columnTitle = ops.find((op) => op.rotated && op.text.startsWith('Совершению'))!
-    expect(value.y).toBeGreaterThan(wednesdayLabel.y)
-    expect(value.y).toBeLessThan(thursdayLabel.y)
+    expect(value.y).toBeGreaterThan(mondayLabel.y)
+    expect(value.y).toBeLessThan(tuesdayLabel.y)
     expect(Math.abs(value.x - columnTitle.x)).toBeLessThan(12)
   })
 
   it('marks the derived fill frequency with X', () => {
-    const days = ['2026-11-09', '2026-11-10'].map((d) => applyRating(emptyDayEntry(d), 'anger', 1))
+    const days = ['2026-11-12', '2026-11-13'].map((d) => applyRating(emptyDayEntry(d), 'anger', 1))
 
     const ops = texts(layoutOf(days).ops)
 
@@ -77,7 +89,7 @@ describe('buildCardLayout', () => {
 
   it('keeps each substance quantity on the line of its name', () => {
     const day: DayEntry = {
-      ...emptyDayEntry('2026-11-09'),
+      ...emptyDayEntry('2026-11-12'),
       substances: {
         prescribed: [
           { name: 'Сертралин', quantity: '50 мг' },
@@ -96,7 +108,7 @@ describe('buildCardLayout', () => {
 
   it('cuts a name that does not fit its cell with an ellipsis', () => {
     const day: DayEntry = {
-      ...emptyDayEntry('2026-11-09'),
+      ...emptyDayEntry('2026-11-12'),
       substances: {
         otc: [{ name: 'Очень длинное название лекарства без пробелов', quantity: '1' }],
       },
@@ -115,7 +127,7 @@ describe('buildCardLayout', () => {
       skillsUse: 7,
     }
 
-    const { ops } = layoutOf([full], { duringSession: true, startDate: '2026-11-09' }, 'Анна')
+    const { ops } = layoutOf([full], { duringSession: true, startDate: '2026-11-11' }, 'Анна')
 
     for (const op of ops) {
       const points =

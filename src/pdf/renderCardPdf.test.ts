@@ -15,9 +15,9 @@ const font = (file: string) =>
 describe('renderCardPdf', () => {
   it('renders a one-page landscape A4 PDF with Russian text', async () => {
     const card = buildWeekCard(
-      '2026-11-09',
-      [applyRating(emptyDayEntry('2026-11-09'), 'anxiety', 4)],
-      { weekStart: '2026-11-09', duringSession: false },
+      '2026-11-11',
+      [applyRating(emptyDayEntry('2026-11-11'), 'anxiety', 4)],
+      { weekStart: '2026-11-11', duringSession: false },
       { name: 'Анна' },
     )
 

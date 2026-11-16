@@ -32,6 +32,8 @@ date, and downloads the PDF to save it to Files or send it.
 
 ## Feature-specific rules
 
+- The days are listed from Wednesday to Tuesday («Ср.» first). On a Wednesday the screen opens on the week that
+  has just started; the card for that day's session is one «‹» back.
 - A filled day is marked with a filled heart and «заполнен»; future days are disabled and show «—».
 - «Как часто вы заполняете эту сторону в неделю?» is shown, not entered; it follows the filled days.
 - The name comes from the settings; without a name the screen says where to enter it.
@@ -49,7 +51,7 @@ date, and downloads the PDF to save it to Files or send it.
    show «—» and do not open.
 2. Fill one more day on «День», come back → «Как часто…» changes accordingly (for example from «Один» to «2-3 р.»).
 3. Choose «Нет» and enter a start date, switch to «Настройки» and back → both are kept.
-4. Tap «Скачать PDF» → the share sheet opens with `diary-card-<Monday>.pdf`; save it to Files and open it → a
-   landscape table like the paper card: values in the cells of their days, X on «Нет», on the fill frequency, the
-   start date in the blanks, the «Применение навыков*» legend under the table.
+4. Tap «Скачать PDF» → the share sheet opens with `diary-card-<Wednesday>.pdf`; save it to Files and open it → a
+   landscape table like the paper card with rows from «Ср.» to «Вт.»: values in the cells of their days, X on «Нет»,
+   on the fill frequency, the start date in the blanks, the «Применение навыков*» legend under the table.
 5. Go one week back with «‹» and download its PDF → the PDF shows that week's dates and values.

@@ -25,35 +25,35 @@ describe('resolveFillFrequency', () => {
 
 describe('buildWeekCard', () => {
   it('places entries on their weekdays and leaves other days null', () => {
-    const card = buildWeekCard('2026-11-09', [ratedDay('2026-11-11')], undefined, { name: 'А' })
+    const card = buildWeekCard('2026-11-11', [ratedDay('2026-11-16')], undefined, { name: 'А' })
 
     expect(card.days.map((day) => day?.date ?? null)).toEqual([
       null,
       null,
-      '2026-11-11',
       null,
       null,
       null,
+      '2026-11-16',
       null,
     ])
   })
 
   it('ignores entries outside the week and empty entries for the fill frequency', () => {
-    const entries = [ratedDay('2026-11-08'), ratedDay('2026-11-10'), emptyDayEntry('2026-11-12')]
+    const entries = [ratedDay('2026-11-10'), ratedDay('2026-11-12'), emptyDayEntry('2026-11-13')]
 
-    const card = buildWeekCard('2026-11-09', entries, undefined, { name: '' })
+    const card = buildWeekCard('2026-11-11', entries, undefined, { name: '' })
 
     expect(card.fillFrequency).toBe('once')
   })
 
   it('uses an empty header with the week start when no header is stored', () => {
-    const card = buildWeekCard('2026-11-09', [], undefined, { name: '' })
+    const card = buildWeekCard('2026-11-11', [], undefined, { name: '' })
 
-    expect(card.header).toEqual({ weekStart: '2026-11-09' })
+    expect(card.header).toEqual({ weekStart: '2026-11-11' })
   })
 
-  it('throws when the week start is not a Monday', () => {
-    expect(() => buildWeekCard('2026-11-10', [], undefined, { name: '' })).toThrow()
+  it('throws when the week start is not a Wednesday', () => {
+    expect(() => buildWeekCard('2026-11-09', [], undefined, { name: '' })).toThrow()
   })
 })
 
@@ -74,12 +74,12 @@ describe('collectSubstanceNames', () => {
 })
 
 describe('tryParseWeekHeader', () => {
-  it('rejects a week start that is not a Monday', () => {
-    expect(tryParseWeekHeader({ weekStart: '2026-11-10' }).ok).toBe(false)
+  it('rejects a week start that is not a Wednesday', () => {
+    expect(tryParseWeekHeader({ weekStart: '2026-11-09' }).ok).toBe(false)
   })
 
   it('accepts a header with both values', () => {
-    const raw = { weekStart: '2026-11-09', duringSession: true, startDate: '2026-11-09' }
+    const raw = { weekStart: '2026-11-11', duringSession: true, startDate: '2026-11-11' }
 
     expect(tryParseWeekHeader(raw)).toEqual({ ok: true, value: raw })
   })

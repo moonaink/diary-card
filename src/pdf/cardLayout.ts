@@ -11,7 +11,7 @@ import {
   type RatingKey,
   type SubstanceCategory,
 } from '../card/cardColumns.ts'
-import { WEEKDAY_SHORT_LABELS, parseIsoDate, weekDates } from '../card/dates.ts'
+import { parseIsoDate, weekDates, weekdayShortLabel } from '../card/dates.ts'
 import type { DayEntry } from '../card/dayEntry.ts'
 import { FILL_FREQUENCY_OPTIONS, type WeekCard } from '../card/weekCard.ts'
 
@@ -406,7 +406,7 @@ export function buildCardLayout(card: WeekCard, measure: MeasureText): CardLayou
     const dayBox = { x: tableX, y, w: DAY_W, h: rowH }
     out.rect(dayBox)
     const parsedDate = parseIsoDate(date)
-    out.text(WEEKDAY_SHORT_LABELS[i], tableX + PAD + 1, y + PAD + 8 * ASCENT + 1, 8)
+    out.text(weekdayShortLabel(date), tableX + PAD + 1, y + PAD + 8 * ASCENT + 1, 8)
     out.text(
       `${pad2(parsedDate.getDate())}.${pad2(parsedDate.getMonth() + 1)}`,
       tableX + PAD + 1,

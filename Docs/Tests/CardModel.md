@@ -14,7 +14,7 @@ Files:
 
 - `src/card/dates.test.ts`
 
-Contract: weeks run Monday to Sunday, day arithmetic moves by calendar days across months, leap years and
+Contract: weeks run Wednesday to Tuesday, day arithmetic moves by calendar days across months, leap years and
 daylight-saving changes, and only real calendar dates are accepted.
 
 Canonical docs:

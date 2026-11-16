@@ -36,6 +36,8 @@ user installs the app again and restores the file.
 
 - A file of another kind, a damaged file, or a file from a newer app version — rejected with the reason; records
   unchanged.
+- A file saved before the card week moved to Wednesday — restored without its week headers; the dialog counts no
+  week headers.
 - Writing the restore fails — «Не удалось восстановить, прежние записи не тронуты».
 
 ## Manual test checklist

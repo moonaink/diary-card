@@ -22,7 +22,8 @@ phone (see [LocalOnlyPwa.md](../Decisions/LocalOnlyPwa.md)). The interface is in
 
 ## The Diary Card
 
-A card covers one week, Monday to Sunday. Each day of the week has one row with these groups (Russian labels as on
+A card covers one week, Wednesday to Tuesday: the therapy session is on Wednesday, so one card holds exactly the
+days since the previous session. Each day of the week has one row with these groups (Russian labels as on
 the paper card):
 
 - «Побуждение к» — urges, each 0–5: «Совершению суицида», «Самоповреждению», «Употреблению наркотиков».

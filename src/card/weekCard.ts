@@ -1,11 +1,11 @@
 import { SUBSTANCE_CATEGORY_KEYS, type SubstanceCategory } from './cardColumns.ts'
-import { isIsoDate, weekDates, weekStartOf, type IsoDate } from './dates.ts'
+import { isIsoDate, isWeekStart, weekDates, type IsoDate } from './dates.ts'
 import { isDayEntryEmpty, isPlainObject, type DayEntry } from './dayEntry.ts'
 import { parsed, rejected, type ParseResult } from './parseResult.ts'
 
 /** Values of the card header that are entered per week. Absent values print as blanks. */
 export interface WeekHeader {
-  /** Monday of the week; the key of the header. */
+  /** Wednesday that starts the week; the key of the header. */
   weekStart: IsoDate
   /** «Вы заполняете дневник во время сессии?» */
   duringSession?: boolean
@@ -43,7 +43,7 @@ export function resolveFillFrequency(filledDays: number): FillFrequency | null {
 /** Everything the PDF of one week needs. Built from stored records each time, never stored itself. */
 export interface WeekCard {
   weekStart: IsoDate
-  /** Monday to Sunday; null for a day without an entry. */
+  /** Wednesday to Tuesday; null for a day without an entry. */
   days: (DayEntry | null)[]
   header: WeekHeader
   name: string
@@ -56,7 +56,7 @@ export function buildWeekCard(
   header: WeekHeader | undefined,
   settings: DiarySettings,
 ): WeekCard {
-  if (weekStartOf(weekStart) !== weekStart) throw new Error(`${weekStart} is not a Monday`)
+  if (!isWeekStart(weekStart)) throw new Error(`${weekStart} is not a Wednesday`)
   const byDate = new Map(entries.map((entry) => [entry.date, entry]))
   const days = weekDates(weekStart).map((date) => {
     const entry = byDate.get(date)
@@ -98,7 +98,7 @@ export function collectAllSubstanceNames(
 
 export function tryParseWeekHeader(value: unknown): ParseResult<WeekHeader> {
   if (!isPlainObject(value)) return rejected('шапка недели не является объектом')
-  if (!isIsoDate(value.weekStart) || weekStartOf(value.weekStart) !== value.weekStart) {
+  if (!isIsoDate(value.weekStart) || !isWeekStart(value.weekStart)) {
     return rejected(`неверное начало недели: ${String(value.weekStart)}`)
   }
   const header: WeekHeader = { weekStart: value.weekStart }

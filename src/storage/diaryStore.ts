@@ -1,12 +1,12 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb'
 import { isDayEntryEmpty, normalizeDayEntry, type DayEntry } from '../card/dayEntry.ts'
-import type { IsoDate } from '../card/dates.ts'
+import { isWeekStart, type IsoDate } from '../card/dates.ts'
 import { DEFAULT_SETTINGS, type DiarySettings, type WeekHeader } from '../card/weekCard.ts'
 import type { DiaryContents } from './backupFile.ts'
 
 export const DIARY_DB_NAME = 'diary-card'
 /** Raised with every change of object stores or record shape; `upgrade` then migrates older data. */
-const DIARY_DB_VERSION = 1
+const DIARY_DB_VERSION = 2
 const SETTINGS_KEY = 'settings'
 
 interface DiaryDb extends DBSchema {
@@ -28,10 +28,21 @@ export class DiaryStore {
 
   static async open(): Promise<DiaryStore> {
     const db = await openDB<DiaryDb>(DIARY_DB_NAME, DIARY_DB_VERSION, {
-      upgrade(database) {
-        database.createObjectStore('days', { keyPath: 'date' })
-        database.createObjectStore('weeks', { keyPath: 'weekStart' })
-        database.createObjectStore('settings')
+      async upgrade(database, oldVersion, _newVersion, transaction) {
+        if (oldVersion < 1) {
+          database.createObjectStore('days', { keyPath: 'date' })
+          database.createObjectStore('weeks', { keyPath: 'weekStart' })
+          database.createObjectStore('settings')
+        }
+        if (oldVersion === 1) {
+          // Version 1 kept week headers of Monday-to-Sunday weeks. A card week now starts on Wednesday,
+          // and such a header belongs to no card week, so it is dropped; days are keyed by date and stay.
+          let cursor = await transaction.objectStore('weeks').openCursor()
+          while (cursor) {
+            if (!isWeekStart(cursor.key)) await cursor.delete()
+            cursor = await cursor.continue()
+          }
+        }
       },
     })
     return new DiaryStore(db)

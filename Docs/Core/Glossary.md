@@ -8,7 +8,7 @@ Terms that have a special meaning in this project. The product description of ea
 
 ### Diary card
 
-One week, Monday to Sunday: seven day entries plus the week header. The unit of the PDF export. In code: `WeekCard`,
+One week, Wednesday to Tuesday: seven day entries plus the week header. The unit of the PDF export. In code: `WeekCard`,
 built by `buildWeekCard()`. Russian label: «Дневниковая карточка».
 
 Should not be confused with: day entry. A day entry is one row of a card.

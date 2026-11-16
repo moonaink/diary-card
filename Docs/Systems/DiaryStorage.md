@@ -16,8 +16,8 @@ only code that reads and writes the records.
 ## Source of truth
 
 - `DiaryStore` (IndexedDB database `diary-card`, named by `DIARY_DB_NAME`) is the source of truth for every record:
-  days keyed by date, week headers keyed by their Monday, and one settings record. Screens hold drafts and view
-  state only and re-read records from the store.
+  days keyed by date, week headers keyed by the Wednesday that starts the week, and one settings record. Screens hold
+  drafts and view state only and re-read records from the store.
 - `BACKUP_FORMAT` and `BACKUP_VERSION` in `src/storage/backupFile.ts` define what counts as a backup file.
 
 ## Primary code directory
@@ -56,6 +56,9 @@ clears all stores and writes the contents in one read-write transaction.
 - A restore is all or nothing: an invalid file changes nothing, and a failing write aborts the transaction so the
   previous records stay.
 - A backup file of a newer `version` than `BACKUP_VERSION` is refused with a request to update the app.
+- Week headers exist only for weeks that start on a Wednesday. Version 1 of the database and of the backup file
+  kept headers of Monday-to-Sunday weeks: opening a version 1 database deletes them in the `upgrade` callback, and a
+  version 1 file is restored with its days and name but without its week headers.
 - Storage belongs to one origin and one installation: the dev server address, a Safari tab and the home-screen app
   each have their own records ([LocalOnlyPwa.md](../Decisions/LocalOnlyPwa.md)).
 

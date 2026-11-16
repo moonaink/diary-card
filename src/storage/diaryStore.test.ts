@@ -1,9 +1,17 @@
 import 'fake-indexeddb/auto'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { addSubstance, applyRating, emptyDayEntry } from '../card/dayEntry.ts'
+import { openDB } from 'idb'
 import { DIARY_DB_NAME, DiaryStore } from './diaryStore.ts'
 
 let store: DiaryStore
+
+const deleteDiaryDb = () =>
+  new Promise<void>((resolve, reject) => {
+    const request = indexedDB.deleteDatabase(DIARY_DB_NAME)
+    request.onsuccess = () => resolve()
+    request.onerror = () => reject(request.error)
+  })
 
 beforeEach(async () => {
   store = await DiaryStore.open()
@@ -12,11 +20,7 @@ beforeEach(async () => {
 afterEach(async () => {
   store.close()
   // Every test starts from an empty database.
-  await new Promise<void>((resolve, reject) => {
-    const request = indexedDB.deleteDatabase(DIARY_DB_NAME)
-    request.onsuccess = () => resolve()
-    request.onerror = () => reject(request.error)
-  })
+  await deleteDiaryDb()
 })
 
 describe('DiaryStore.saveDay', () => {
@@ -66,11 +70,35 @@ describe('DiaryStore.loadDaysBetween', () => {
 
 describe('DiaryStore.saveWeekHeader', () => {
   it('deletes the header when both values are cleared', async () => {
-    await store.saveWeekHeader({ weekStart: '2026-11-09', duringSession: true })
+    await store.saveWeekHeader({ weekStart: '2026-11-11', duringSession: true })
 
-    await store.saveWeekHeader({ weekStart: '2026-11-09' })
+    await store.saveWeekHeader({ weekStart: '2026-11-11' })
 
-    expect(await store.loadWeekHeader('2026-11-09')).toBeUndefined()
+    expect(await store.loadWeekHeader('2026-11-11')).toBeUndefined()
+  })
+})
+
+describe('DiaryStore.open', () => {
+  it('drops the Monday week headers of a version 1 database and keeps its days', async () => {
+    store.close()
+    await deleteDiaryDb()
+    const day = { date: '2026-11-10', ratings: { anger: 1 }, substances: {} }
+    const versionOne = await openDB(DIARY_DB_NAME, 1, {
+      upgrade(database) {
+        database.createObjectStore('days', { keyPath: 'date' })
+        database.createObjectStore('weeks', { keyPath: 'weekStart' })
+        database.createObjectStore('settings')
+      },
+    })
+    await versionOne.put('days', day)
+    await versionOne.put('weeks', { weekStart: '2026-11-09', duringSession: true })
+    versionOne.close()
+
+    store = await DiaryStore.open()
+
+    const contents = await store.exportAll()
+    expect(contents.weeks).toEqual([])
+    expect(contents.days).toEqual([day])
   })
 })
 
@@ -81,7 +109,7 @@ describe('DiaryStore.replaceAll', () => {
     const contents = {
       settings: { name: 'Новое' },
       days: [applyRating(emptyDayEntry('2026-11-10'), 'sadness', 3)],
-      weeks: [{ weekStart: '2026-11-09', startDate: '2026-11-09' }],
+      weeks: [{ weekStart: '2026-11-11', startDate: '2026-11-11' }],
     }
 
     await store.replaceAll(contents)

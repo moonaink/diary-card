@@ -15,7 +15,7 @@ React, no storage and no PDF code.
 - Defines the stored form of a day and when a day counts as not filled.
 - Derives the week card and its fill frequency from stored records.
 - Turns untrusted data into valid records or a reason for rejecting it.
-- Does calendar arithmetic on local dates with Monday-based weeks.
+- Does calendar arithmetic on local dates with weeks that start on Wednesday.
 
 ## Source of truth
 
@@ -38,7 +38,8 @@ React, no storage and no PDF code.
   `normalizeDayEntry()`, `isDayEntryEmpty()`, `tryParseDayEntry()`.
 - `src/card/weekCard.ts` — `WeekHeader`, `DiarySettings`, `WeekCard`, `FillFrequency`, `buildWeekCard()`,
   `collectSubstanceNames()`, `tryParseWeekHeader()`, `tryParseSettings()`.
-- `src/card/dates.ts` — `IsoDate` and week arithmetic: `weekStartOf()`, `isInPastWeek()`.
+- `src/card/dates.ts` — `IsoDate` and week arithmetic: `weekStartOf()`, `isWeekStart()`, `isInPastWeek()`,
+  `weekdayShortLabel()`.
 - `src/card/parseResult.ts` — `ParseResult`, the outcome of reading untrusted data.
 
 ## Runtime flow
@@ -63,13 +64,14 @@ React, no storage and no PDF code.
   categories. The editing draft keeps blank rows, so a row the user has just added does not vanish.
 - Fill frequency: seven filled days — `daily`, four to six — `fourToSix`, two or three — `twoToThree`, one — `once`,
   none — no value.
-- Dates are local calendar dates written `YYYY-MM-DD`; a week runs Monday to Sunday. Adding days moves by calendar
+- Dates are local calendar dates written `YYYY-MM-DD`; a week runs Wednesday to Tuesday,
+  set once by `CARD_WEEK_START_DAY` in `src/card/dates.ts`. Adding days moves by calendar
   days, so a daylight-saving change does not shift a date.
 - Rejection reasons are in Russian: the restore screen shows them to the user.
 
 ## Edge cases
 
-- An entry of another week passed to `buildWeekCard()` is ignored; a week start that is not a Monday throws.
+- An entry of another week passed to `buildWeekCard()` is ignored; a week start that is not a Wednesday throws.
 - `collectSubstanceNames()` trims names, ignores empty ones, orders by how often a name was used, then
   alphabetically.
 - A backup record with a known date but an unknown column key is rejected rather than silently dropped.
