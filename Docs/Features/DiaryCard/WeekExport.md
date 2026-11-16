@@ -25,7 +25,8 @@ date, and downloads the PDF to save it to Files or send it.
    `DiaryStore.saveWeekHeader`.
 3. «Скачать PDF» re-reads the week, renders the PDF ([CardPdf.md](../../Systems/CardPdf.md) `## Runtime flow`) and
    calls `deliverFile()` from `src/ui/deliverFile.ts`.
-4. `deliverFile()` opens the share sheet on a touch device and downloads the file elsewhere. When Safari refuses the
+4. `deliverFile()` opens the share sheet on an iPhone or iPad (`isAppleMobile()`) and downloads the file everywhere
+   else, including touch-screen computers, whose share windows cannot save a file. When Safari refuses the
    share sheet because the tap has expired during rendering, the screen shows «PDF готов — открыть «Поделиться»»,
    whose tap opens the share sheet directly.
 

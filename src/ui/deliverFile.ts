@@ -1,15 +1,32 @@
 export type DeliveryOutcome = 'shared' | 'downloaded' | 'cancelled' | 'needsTap'
 
+export interface DeviceInfo {
+  userAgent: string
+  platform: string
+  maxTouchPoints: number
+}
+
 /**
- * Hands a generated file to the user: the share sheet on a phone (save to Files, send to a messenger),
- * a download on a computer.
+ * iPhone and iPad, where the share sheet is the way a file reaches Files or a messenger. iPadOS reports
+ * itself as a Mac, so a "Mac" with a touch screen counts too. A touch screen alone is not enough: on a
+ * Windows laptop it would open the Windows share window, which cannot save a file.
+ */
+export function isAppleMobile(device: DeviceInfo): boolean {
+  return (
+    /iPhone|iPad|iPod/.test(device.userAgent) ||
+    (device.platform === 'MacIntel' && device.maxTouchPoints > 1)
+  )
+}
+
+/**
+ * Hands a generated file to the user: the share sheet on an iPhone or iPad (save to Files, send to a
+ * messenger), a download everywhere else.
  *
  * Safari opens the share sheet only right after a tap. When the file took long to prepare, the tap has
  * expired and the result is 'needsTap': the caller shows a button whose click calls this function again.
  */
 export async function deliverFile(file: File): Promise<DeliveryOutcome> {
-  const touchDevice = window.matchMedia('(pointer: coarse)').matches
-  if (touchDevice && navigator.canShare?.({ files: [file] })) {
+  if (isAppleMobile(navigator) && navigator.canShare?.({ files: [file] })) {
     try {
       await navigator.share({ files: [file] })
       return 'shared'

@@ -8,6 +8,7 @@ tests are written is in [TestingRules.md](TestingRules.md).
 | Card model | [CardModel.md](../Tests/CardModel.md) | `src/card/` | [CardModel.md](../Systems/CardModel.md) |
 | Storage | [Storage.md](../Tests/Storage.md) | `src/storage/` | [DiaryStorage.md](../Systems/DiaryStorage.md) |
 | PDF | [CardPdf.md](../Tests/CardPdf.md) | `src/pdf/` | [CardPdf.md](../Systems/CardPdf.md) |
+| UI | [Ui.md](../Tests/Ui.md) | `src/ui/` | [WeekExport.md](../Features/DiaryCard/WeekExport.md) |
 
 ## Commands
 
